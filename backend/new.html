@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Populate Form with API Suggestions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .suggestions {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        max-height: 150px;
+        overflow-y: auto;
+        width: 100%;
+        z-index: 10;
+      }
+      .suggestions div {
+        padding: 8px;
+        cursor: pointer;
+      }
+      .suggestions div:hover {
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body class="m-8 bg-red-500">
+    <h1 class="text-2xl text-red-900 mb-4 font-bold">Populate Form</h1>
+    <div
+      class="flex items-center justify-center space-y-2 w-full flex-col bg-red-900 p-12 rounded-xl"
+    >
+      <div class="flex items-center justify-center space-x-2 w-full">
+        <!-- EMP # Field -->
+        <div class="relative">
+          <label for="empno" class="leading-7 text-sm text-gray-200"
+            >EMP #</label
+          >
+          <input
+            type="text"
+            id="empno"
+            name="empno"
+            class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+
+        <!-- ENAME Field -->
+        <div class="relative">
+          <label for="ename" class="leading-7 text-sm text-gray-200"
+            >Employee Name</label
+          >
+          <input
+            type="text"
+            id="ename"
+            name="ename"
+            class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+
+        <!-- JOB Field -->
+        <div class="relative">
+          <label for="job" class="leading-7 text-sm text-gray-200"
+            >Job Title</label
+          >
+          <input
+            type="text"
+            id="job"
+            name="job"
+            class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center space-x-2 w-full">
+        <!-- MGR Field -->
+        <div class="relative">
+          <label for="mgr" class="leading-7 text-sm text-gray-200"
+            >Manager</label
+          >
+          <input
+            type="text"
+            id="mgr"
+            name="mgr"
+            class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+
+        <!-- HIREDATE Field -->
+        <div class="relative">
+          <label for="hiredate" class="leading-7 text-sm text-gray-200"
+            >Hire Date</label
+          >
+          <input
+            type="text"
+            id="hiredate"
+            name="hiredate"
+            class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+
+        <!-- SAL Field -->
+        <div class="relative">
+          <label for="sal" class="leading-7 text-sm text-gray-200"
+            >Salary</label
+          >
+          <input
+            type="number"
+            id="sal"
+            name="sal"
+            class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center space-x-2 w-full">
+        <!-- COMM Field -->
+        <div class="relative">
+          <label for="comm" class="leading-7 text-sm text-gray-200"
+            >Commission</label
+          >
+          <input
+            type="number"
+            id="comm"
+            name="comm"
+            class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+
+        <!-- DEPTNO Field -->
+        <div class="relative">
+          <label for="deptno" class="leading-7 text-sm text-gray-200"
+            >Department #</label
+          >
+          <input
+            type="number"
+            id="deptno"
+            name="deptno"
+            class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const formFields = [
+          "empno",
+          "ename",
+          "job",
+          "mgr",
+          "hiredate",
+          "sal",
+          "comm",
+          "deptno",
+        ];
+        const apiURL = "http://localhost:8910/api/test";
+        async function fetchData() {
+          try {
+            const response = await fetch(apiURL);
+            const data = await response.json();
+            return data;
+          } catch (error) {
+            console.error("Error fetching data:", error);
+            return [];
+          }
+        }
+
+        // Show suggestions as user types
+        function showSuggestions(field, suggestions) {
+          const suggestionsList = document.createElement("div");
+          suggestionsList.classList.add("suggestions");
+          suggestionsList.style.top = `${field.offsetHeight}px`; // Position below the input field
+          suggestions.forEach((item) => {
+            const suggestionItem = document.createElement("div");
+            suggestionItem.innerText =
+              item[field.id] !== null ? item[field.id] : "null";
+            suggestionItem.addEventListener("click", () =>
+              populateFields(item)
+            );
+            suggestionsList.appendChild(suggestionItem);
+          });
+          clearSuggestions();
+          field.parentNode.appendChild(suggestionsList);
+        }
+
+        function populateFields(data) {
+          formFields.forEach((field) => {
+            const fieldElement = document.getElementById(field);
+            const value = data[field];
+
+            // Check if the value is null
+            if (value === null) {
+              fieldElement.value = "null";
+            } else if (field === "hiredate" && value) {
+              // Format the date if the field is 'hiredate'
+              const date = new Date(value);
+              fieldElement.value = !isNaN(date)
+                ? date.toLocaleDateString()
+                : "Invalid Date";
+            } else {
+              fieldElement.value = value;
+            }
+          });
+          clearSuggestions();
+        }
+
+        // Clear previous suggestions
+        function clearSuggestions() {
+          document
+            .querySelectorAll(".suggestions")
+            .forEach((element) => element.remove());
+        }
+
+        // Handle input field events for suggestions
+        async function handleInput(event) {
+          const field = event.target;
+          const inputValue = field.value.toLowerCase();
+          const data = await fetchData();
+          const suggestions = data.filter((item) =>
+            item[field.id]?.toString().toLowerCase().startsWith(inputValue)
+          );
+          clearSuggestions();
+          if (inputValue && suggestions.length > 0) {
+            showSuggestions(field, suggestions);
+          }
+        }
+
+        // Add event listeners to each input field for suggestions
+        formFields.forEach((field) => {
+          const input = document.getElementById(field);
+          input.addEventListener("input", handleInput);
+        });
+      });
+    </script>
+  </body>
+</html>

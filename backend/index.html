@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Form with Suggestions</title>
+    <style>
+      body {
+        font-family: cursive, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+        flex-direction: column;
+      }
+      .form-container {
+        width: 400px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: none;
+      }
+      .form-group {
+        margin-bottom: 15px;
+        position: relative;
+      }
+      .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .suggestions {
+        position: absolute;
+        background: #fff;
+        border: 1px solid #ddd;
+        max-height: 150px;
+        overflow-y: auto;
+        border-radius: 4px;
+        display: none;
+        z-index: 1000;
+      }
+      .suggestions div {
+        padding: 8px;
+        cursor: pointer;
+      }
+      .suggestions div:hover {
+        background-color: #eee;
+      }
+      #showFormButton {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-bottom: 20px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 4px;
+      }
+      #loadingMessage,
+      #errorMessage {
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+      }
+      #errorMessage {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="showFormButton">Show Form</button>
+    <div id="loadingMessage" style="display: none">Loading form...</div>
+    <div id="errorMessage" style="display: none">
+      Error fetching data. Please try again.
+    </div>
+
+    <div class="form-container" id="formContainer">
+      <form id="dynamicForm"></form>
+    </div>
+
+    <script>
+      let apiData = []; // Store all data for local filtering
+      let suggestionsDiv = null; // Reference for suggestions div
+
+      document
+        .getElementById("showFormButton")
+        .addEventListener("click", async () => {
+          document.getElementById("loadingMessage").style.display = "block";
+          document.getElementById("formContainer").style.display = "none";
+          document.getElementById("errorMessage").style.display = "none";
+
+          await generateForm(); // Generate form fields based on API response
+
+          document.getElementById("loadingMessage").style.display = "none";
+          document.getElementById("formContainer").style.display = "block";
+        });
+
+      // Fetch data from API and generate form fields dynamically
+      async function generateForm() {
+        const formContainer = document.getElementById("dynamicForm");
+        const apiURL = "http://localhost:8910/api/test"; // Replace with your API endpoint
+
+        try {
+          const response = await fetch(apiURL);
+          const rawData = await response.json();
+
+          apiData = Array.isArray(rawData) ? rawData : Object.values(rawData);
+
+          if (apiData.length === 0) {
+            throw new Error("No data received or data format is incorrect.");
+          }
+
+          formContainer.innerHTML = ""; // Clear existing form fields
+
+          // Dynamically create form fields based on the keys of the first item in the response
+          const firstItem = apiData[0];
+          for (const key in firstItem) {
+            const formGroup = document.createElement("div");
+            formGroup.className = "form-group";
+
+            const label = document.createElement("label");
+            label.htmlFor = key;
+            label.textContent = key;
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.id = key;
+            input.name = key;
+            input.dataset.key = key;
+            input.addEventListener("input", handleInput);
+
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+            formContainer.appendChild(formGroup);
+          }
+
+          // Create a reusable suggestions div
+          suggestionsDiv = document.createElement("div");
+          suggestionsDiv.className = "suggestions";
+          document.body.appendChild(suggestionsDiv);
+        } catch (error) {
+          console.error("Error fetching data from API:", error);
+          document.getElementById("errorMessage").style.display = "block";
+        }
+      }
+
+      // Handle input and show suggestions based on local filtering
+      function handleInput(event) {
+        const query = event.target.value.toLowerCase();
+        const fieldKey = event.target.dataset.key;
+
+        if (query.length < 2) {
+          suggestionsDiv.style.display = "none"; // Hide if query is too short
+          return;
+        }
+
+        suggestionsDiv.innerHTML = ""; // Clear previous suggestions
+
+        // Filter the data locally based on the current input
+        const filteredData = apiData.filter((item) =>
+          item[fieldKey]?.toString().toLowerCase().includes(query)
+        );
+
+        if (filteredData.length > 0) {
+          // Position suggestions below the input field
+          const inputRect = event.target.getBoundingClientRect();
+          suggestionsDiv.style.position = "absolute";
+          suggestionsDiv.style.width = `${inputRect.width}px`;
+          suggestionsDiv.style.top = `${inputRect.bottom + window.scrollY}px`;
+          suggestionsDiv.style.left = `${inputRect.left + window.scrollX}px`;
+
+          // Populate suggestions
+          filteredData.forEach((suggestion) => {
+            const div = document.createElement("div");
+            div.textContent = suggestion[fieldKey];
+            div.addEventListener("click", () => {
+              populateFields(suggestion);
+              suggestionsDiv.style.display = "none";
+            });
+            suggestionsDiv.appendChild(div);
+          });
+
+          // Show suggestions container
+          suggestionsDiv.style.display = "block";
+        } else {
+          suggestionsDiv.style.display = "none"; // Hide if no matches found
+        }
+      }
+
+      // Populate all form fields with selected data
+      function populateFields(data) {
+        for (const key in data) {
+          const input = document.getElementById(key);
+          if (input) {
+            input.value = data[key];
+          }
+        }
+      }
+
+      // Hide suggestions when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!suggestionsDiv.contains(e.target)) {
+          suggestionsDiv.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
