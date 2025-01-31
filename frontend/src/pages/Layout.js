@@ -164,7 +164,7 @@ const Layout = () => {
 
           {/* Main Content Area */}
           <main className="bg-white/10 rounded-2xl overflow-hidden">
-            <div className="p-2 rounded-2xl overflow-hidden">
+            <div className="rounded-2xl overflow-hidden">
               <Outlet />
             </div>
           </main>

@@ -11,16 +11,14 @@ const PlatinumUsers = () => {
   });
 
   const statusOptions = [
-    { value: "active", label: "Active", color: "bg-green-50 text-green-700" },
-    { value: "inactive", label: "Inactive", color: "bg-red-50 text-red-700" },
     {
       value: "premium",
       label: "Premium",
       color: "bg-purple-50 text-purple-700",
     },
     {
-      value: "pending",
-      label: "Pending",
+      value: "basic",
+      label: "Basic",
       color: "bg-yellow-50 text-yellow-700",
     },
   ];
@@ -43,7 +41,8 @@ const PlatinumUsers = () => {
 
         // Filter only Platinum ZATCA package users
         const platinumUsers = usersArray.filter(
-          (user) => user.package === "Platinum ZATCA"
+          (user) =>
+            user.package.toLowerCase() === "platinum zatca".toLowerCase()
         );
         setUsers(platinumUsers);
       } catch (err) {
@@ -56,29 +55,6 @@ const PlatinumUsers = () => {
 
     fetchUsers();
   }, []);
-
-  const handleStatusChange = async (userId, newStatus) => {
-    try {
-      const response = await fetch(
-        "https://zatca.bzsconnect.com/api/update-status",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, status: newStatus }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to update status");
-
-      setUsers(
-        users.map((user) =>
-          user._id === userId ? { ...user, status: newStatus } : user
-        )
-      );
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
-  };
 
   const formatDate = (dateString) => {
     try {
@@ -177,9 +153,7 @@ const PlatinumUsers = () => {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {filteredUsers.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-500 text-sm">
-              No Platinum users found matching your filters
-            </p>
+            <p className="text-gray-500 text-sm">No Platinum users found</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -206,22 +180,6 @@ const PlatinumUsers = () => {
                       <span className="text-xs font-medium text-gray-700">
                         {user.package || "N/A"}
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Status</span>
-                      <select
-                        value={user.status || "inactive"}
-                        onChange={(e) =>
-                          handleStatusChange(user._id, e.target.value)
-                        }
-                        className="text-xs px-2 py-1 rounded border focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        {statusOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
                     </div>
 
                     <div className="flex items-center justify-between">

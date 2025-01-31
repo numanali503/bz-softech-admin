@@ -7,7 +7,7 @@ const Loader = () => {
         size="40"
         stroke="3"
         speed="1"
-        color="black"
+        color="#793BED"
       ></l-line-spinner>
     </div>
   );
