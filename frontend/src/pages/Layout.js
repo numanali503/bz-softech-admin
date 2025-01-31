@@ -4,6 +4,7 @@ import WHITE_LOGO from "../assets/light.png";
 
 const Layout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [openCategory, setOpenCategory] = useState(null);
 
   const navItems = [
     {
@@ -33,9 +34,11 @@ const Layout = () => {
       path: "/dashboard/zatca",
       icon: "fa-solid fa-receipt",
       subLinks: [
-        { name: "E-Invoicing", path: "/dashboard/zatca/invoicing" },
-        { name: "Compliance", path: "/dashboard/zatca/compliance" },
-        { name: "Reports", path: "/dashboard/zatca/reports" },
+        { name: " Users List", path: "/dashboard/zatca/users-list" },
+        { name: "Platinum Users", path: "/dashboard/zatca/platinum-users" },
+        { name: "Gold Users", path: "/dashboard/zatca/gold-users" },
+        { name: "Payments", path: "/dashboard/zatca/payments" },
+        { name: "Sales", path: "/dashboard/zatca/sales" },
       ],
     },
     {
@@ -52,6 +55,16 @@ const Layout = () => {
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
+  };
+
+  const handleCategoryClick = (categoryName, event) => {
+    // Prevent the Link navigation when clicking on categories with sublinks
+    if (
+      navItems.find((item) => item.name === categoryName)?.subLinks.length > 0
+    ) {
+      event.preventDefault();
+      setOpenCategory(openCategory === categoryName ? null : categoryName);
+    }
   };
 
   return (
@@ -81,24 +94,31 @@ const Layout = () => {
         <div className="grid grid-cols-[auto_1fr] gap-6">
           {/* Sidebar */}
           <aside
-            className="transition-all duration-500 ease-in-out overflow-hidden"
+            className="transition-all duration-300 ease-in-out overflow-hidden"
             style={{ width: sidebarCollapsed ? "64px" : "240px" }}
           >
             <div className="bg-[#1B3B5D]/50 rounded-2xl p-4">
               <button
-                className="mb-4 w-full flex items-center justify-center text-white"
+                className={`mb-4 w-full flex items-center ${
+                  sidebarCollapsed ? "justify-center" : "justify-end"
+                } text-white`}
                 onClick={toggleSidebar}
               >
-                <i className="fas fa-bars"></i>
+                {sidebarCollapsed ? (
+                  <i className="fas fa-bars"></i>
+                ) : (
+                  <i className="fas fa-times"></i>
+                )}
               </button>
               <nav>
                 <ul className="space-y-4">
                   {navItems.map((item) => (
                     <li key={item.path}>
-                      <div className="relative group">
+                      <div className="relative">
                         <Link
                           to={item.path}
                           className="flex items-center gap-3 text-white p-2 rounded hover:bg-blue-600 transition-colors duration-200"
+                          onClick={(e) => handleCategoryClick(item.name, e)}
                         >
                           <i className={item.icon}></i>
                           <span
@@ -111,23 +131,29 @@ const Layout = () => {
                             {item.name}
                           </span>
                           {item.subLinks.length > 0 && !sidebarCollapsed && (
-                            <i className="fa-solid fa-chevron-down text-xs ml-auto"></i>
+                            <i
+                              className={`fa-solid fa-chevron-down text-xs ml-auto transition-transform duration-200 ${
+                                openCategory === item.name ? "rotate-180" : ""
+                              }`}
+                            ></i>
                           )}
                         </Link>
 
-                        {item.subLinks.length > 0 && !sidebarCollapsed && (
-                          <div className="pl-8 mt-1 space-y-1 hidden group-hover:block">
-                            {item.subLinks.map((subLink) => (
-                              <Link
-                                key={subLink.path}
-                                to={subLink.path}
-                                className="block text-sm text-white/80 hover:text-white py-1 px-2 rounded hover:bg-blue-600"
-                              >
-                                {subLink.name}
-                              </Link>
-                            ))}
-                          </div>
-                        )}
+                        {item.subLinks.length > 0 &&
+                          !sidebarCollapsed &&
+                          openCategory === item.name && (
+                            <div className="pl-8 mt-1 space-y-1">
+                              {item.subLinks.map((subLink) => (
+                                <Link
+                                  key={subLink.path}
+                                  to={subLink.path}
+                                  className="block text-sm text-white/80 hover:text-white py-1 px-2 rounded hover:bg-blue-600"
+                                >
+                                  {subLink.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
                       </div>
                     </li>
                   ))}

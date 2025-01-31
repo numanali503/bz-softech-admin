@@ -3,7 +3,12 @@ import React from "react";
 const Loader = () => {
   return (
     <div className="flex h-screen items-center justify-center bg-white">
-      <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
+      <l-line-spinner
+        size="40"
+        stroke="3"
+        speed="1"
+        color="black"
+      ></l-line-spinner>
     </div>
   );
 };
