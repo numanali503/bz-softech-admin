@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/data";
 import LOGO from "../../assets/light.png";
 import lines from "../../assets/lines.svg";
+import Loader from "../Loader";
 
 const Login = () => {
   const { authURL } = useAuth();
@@ -53,7 +54,7 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       toast.dismiss(toastId);
       toast.success("Welcome to BZ-Softech Dashboard!");
-      setTimeout(() => navigate("/dashboard"), 15000);
+      setTimeout(() => navigate("/dashboard"), 1500);
     } catch (error) {
       toast.error(error.message || "An unexpected error occurred", {
         id: toastId,
