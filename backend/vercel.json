@@ -13,7 +13,7 @@
     }
   ],
   "env": {
-    "MONGO_URI": "@mongo_uri",
+    "DATABASE": "@mongo_uri",
     "JWT_SECRET": "@jwt_secret"
   }
 }
