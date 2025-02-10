@@ -8,6 +8,8 @@ router.route("/register").post(apiKeyMiddleware, adminRegister);
 router.route("/login").post(adminLogin);
 router
   .route("/protected")
-  .get(verifyAdminToken, (req, res) => res.json({ message: "Access granted" }));
+  .get(verifyAdminToken, (req, res) =>
+    res.json({ message: "Welcome to BZ-Softech" })
+  );
 
 module.exports = router;

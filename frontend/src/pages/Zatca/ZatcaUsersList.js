@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import Loader from "../../components/Loader";
 
-const UsersList = () => {
+const ZatcaUsersList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,13 +39,6 @@ const UsersList = () => {
     };
     fetchUsers();
   }, []);
-
-  const isValidDate = (dateString) => {
-    if (!dateString) return false;
-    const date = new Date(dateString);
-    return date instanceof Date && !isNaN(date) && date.getTime() > 0;
-  };
-
   const getMonthlyData = (filterFn) => {
     const monthlyCounts = new Map();
     const filteredUsers = filterFn ? users.filter(filterFn) : users;
@@ -53,7 +46,7 @@ const UsersList = () => {
 
     // Sort users by creation date
     const sortedUsers = [...filteredUsers].sort(
-      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      (a, b) => new Date(a.purchasedOn) - new Date(b.purchasedOn)
     );
 
     // Process users and accumulate counts by month
@@ -287,4 +280,4 @@ const UsersList = () => {
   );
 };
 
-export default UsersList;
+export default ZatcaUsersList;

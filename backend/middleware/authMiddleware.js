@@ -11,7 +11,12 @@ exports.verifyAdminToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded.isAdmin) {
-      return res.status(403).json({ message: "Access denied. Unauthorized!" });
+      return res
+        .status(403)
+        .json({
+          message: "Access denied. Unauthorized!",
+          decodedData: decoded,
+        });
     }
     req.user = decoded;
     next();

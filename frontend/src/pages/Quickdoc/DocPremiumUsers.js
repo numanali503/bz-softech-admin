@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../../components/Loader";
 
-const GoldUsers = () => {
+const DocPremiumUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +27,7 @@ const GoldUsers = () => {
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          "https://zatca.bzsconnect.com/api/fetch-user-stats"
+          "https://quickdoc-server.vercel.app/api/auth/get-users"
         );
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
@@ -39,11 +39,11 @@ const GoldUsers = () => {
           ? data.users
           : [data];
 
-        // Filter only Gold ZATCA package users
-        const goldUsers = usersArray.filter(
-          (user) => user.package.toLowerCase() === "gold zatca".toLowerCase()
+        // Filter only Platinum ZATCA package users
+        const platinumUsers = usersArray.filter(
+          (user) => user.package.toLowerCase() === "pro".toLowerCase()
         );
-        setUsers(goldUsers);
+        setUsers(platinumUsers);
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err.message);
@@ -101,11 +101,11 @@ const GoldUsers = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold text-gray-800 mb-4 md:mb-0">
-              Gold Users Dashboard
+              Quickdoc Premium Users Dashboard
             </h1>
             <div className="bg-blue-50 px-4 py-2 rounded-lg">
               <span className="text-blue-700 text-sm">
-                Total Gold Users: {filteredUsers.length}
+                Total Premium Users: {filteredUsers.length}
               </span>
             </div>
           </div>
@@ -152,7 +152,7 @@ const GoldUsers = () => {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {filteredUsers.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-500 text-sm">No Gold users found</p>
+            <p className="text-gray-500 text-sm">No Premium users found</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -194,20 +194,12 @@ const GoldUsers = () => {
                           ?.label || "Unknown"}
                       </span>
                     </div>
-
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500">
                         Purchased On
                       </span>
                       <span className="text-xs text-gray-700">
-                        {formatDate(user.purchasedOn)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">Expiry Date</span>
-                      <span className="text-xs text-gray-700">
-                        {formatDate(user.purchasedExpiry)}
+                        {formatDate(user.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -232,4 +224,4 @@ const GoldUsers = () => {
   );
 };
 
-export default GoldUsers;
+export default DocPremiumUsers;

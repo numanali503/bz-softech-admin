@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import WHITE_LOGO from "../assets/light.png";
 
 const Layout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [openCategory, setOpenCategory] = useState(null);
+  const navigate = useNavigate();
 
   const navItems = [
     {
@@ -24,9 +25,10 @@ const Layout = () => {
       path: "/dashboard/quickdoc",
       icon: "fa-solid fa-file-medical",
       subLinks: [
-        { name: "Create Document", path: "/dashboard/quickdoc/create" },
-        { name: "Templates", path: "/dashboard/quickdoc/templates" },
-        { name: "Archive", path: "/dashboard/quickdoc/archive" },
+        { name: "Users List", path: "/dashboard/quickdoc/users-list" },
+        { name: "Premium Users", path: "/dashboard/quickdoc/premium-users" },
+        { name: "Basic Users", path: "/dashboard/quickdoc/basic-users" },
+        { name: "payments", path: "/dashboard/quickdoc/payments" },
       ],
     },
     {
@@ -58,7 +60,6 @@ const Layout = () => {
   };
 
   const handleCategoryClick = (categoryName, event) => {
-    // Prevent the Link navigation when clicking on categories with sublinks
     if (
       navItems.find((item) => item.name === categoryName)?.subLinks.length > 0
     ) {
@@ -67,32 +68,32 @@ const Layout = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear(); // Clear local storage
+    navigate("/"); // Navigate to home page
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-tl from-slate-100 to-slate-200">
-      {/* Top Gradient Design */}
       <div className="absolute top-0 left-0 right-0 h-48 rounded-b-[50px] bg-gradient-to-tl from-blue-600 to-violet-600 border-b"></div>
-
-      {/* Main Container */}
       <div className="relative min-h-screen p-6">
-        {/* Header */}
         <header className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-4">
             <img src={WHITE_LOGO} alt="Logo" className="h-10" />
           </div>
-
           <div className="flex items-center gap-4">
             <div className="flex gap-3">
-              <button className="relative group inline-block py-1 px-2 text-xs text-slate-900 hover:text-slate-100 rounded-sm overflow-hidden transition duration-300 bg-white">
+              <button
+                onClick={handleLogout}
+                className="relative group inline-block py-1 px-2 text-xs text-slate-900 hover:text-slate-100 rounded-sm overflow-hidden transition duration-100 bg-white"
+              >
                 <div className="absolute top-0 right-full w-full h-full bg-slate-900 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
                 <span className="relative font-semibold">Log out</span>
               </button>
             </div>
           </div>
         </header>
-
-        {/* Main Content Grid */}
         <div className="grid grid-cols-[auto_1fr] gap-6">
-          {/* Sidebar */}
           <aside
             className="transition-all duration-300 ease-in-out overflow-hidden"
             style={{ width: sidebarCollapsed ? "64px" : "240px" }}
@@ -138,7 +139,6 @@ const Layout = () => {
                             ></i>
                           )}
                         </Link>
-
                         {item.subLinks.length > 0 &&
                           !sidebarCollapsed &&
                           openCategory === item.name && (
@@ -161,8 +161,6 @@ const Layout = () => {
               </nav>
             </div>
           </aside>
-
-          {/* Main Content Area */}
           <main className="bg-white/10 rounded-2xl overflow-hidden">
             <div className="rounded-2xl overflow-hidden">
               <Outlet />

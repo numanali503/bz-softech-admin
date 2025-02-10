@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../../components/Loader";
 
-const Payments = () => {
+const DocPayments = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,13 +17,13 @@ const Payments = () => {
   const fetchPayments = async () => {
     try {
       const response = await fetch(
-        "https://zatca.bzsconnect.com/api/get-checkouts"
+        "https://quickdoc-server.vercel.app/api/auth/get-users"
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setPayments(data);
+      setPayments(data.data);
       setLoading(false);
     } catch (err) {
       setError("Failed to fetch payments data");
@@ -114,13 +114,13 @@ const Payments = () => {
     <div className="w-full p-6 space-y-6 bg-gray-50">
       {/* Filters Section */}
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold mb-6">ZATCA Payments</h2>
+        <h2 className="text-xl font-semibold mb-6">QuickDoc Payments</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="relative">
             <input
               type="text"
               placeholder="Search by name or email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none  focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -133,8 +133,8 @@ const Payments = () => {
             onChange={(e) => setPackageFilter(e.target.value)}
           >
             <option value="all">All Packages</option>
-            <option value="Platinum Zatca">Platinum Zatca</option>
-            <option value="Gold Zatca">Gold Zatca</option>
+            <option value="pro">Pro</option>
+            <option value="not-pro">Not-Pro</option>
           </select>
         </div>
       </div>
@@ -158,9 +158,6 @@ const Payments = () => {
                   Purchase Date
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Expiry Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -177,16 +174,22 @@ const Payments = () => {
                     <div className="text-sm text-gray-500">{payment.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        payment.package.toLowerCase() === "pro"
+                          ? "bg-green-100 text-green-800"
+                          : payment.package.toLowerCase() === "not-pro"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-800" // Default style if neither matches
+                      }`}
+                    >
                       {payment.package}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(payment.purchasedOn)}
+                    {formatDate(payment.createdAt)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(payment.purchasedExpiry)}
-                  </td>
+
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       className="text-blue-600 hover:text-blue-900 mr-4"
@@ -258,4 +261,4 @@ const Payments = () => {
   );
 };
 
-export default Payments;
+export default DocPayments;

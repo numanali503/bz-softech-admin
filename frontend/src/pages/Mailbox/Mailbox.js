@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/data";
 import ReplyModal from "./ReplyModal";
+import Loader from "../../components/Loader";
 
 const Mailbox = () => {
   const { authURL } = useAuth();
@@ -222,11 +223,7 @@ const Mailbox = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl text-gray-600">Loading...</div>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {
